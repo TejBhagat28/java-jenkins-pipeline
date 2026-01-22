@@ -1,9 +1,34 @@
-podTemplate(containers: [containerTemplate(name: 'maven', image: 'maven', command: 'sleep', args: 'infinity')]) {
-  node(POD_LABEL) {
-    checkout scm
-    container('maven') {
-      bat 'mvn -B -ntp -Dmaven.test.failure.ignore verify'
+pipeline {
+    agent any
+
+    tools {
+        maven 'M3'
     }
-    junit '**/target/surefire-reports/TEST-*.xml'
-  }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Build') {
+            steps {
+                bat 'mvn clean package'
+            }
+        }
+
+        stage('Test') {
+            steps {
+                bat 'mvn test'
+            }
+        }
+
+        stage('Archive') {
+            steps {
+                archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
+                junit '**/target/surefire-reports/TEST-*.xml'
+            }
+        }
+    }
 }
