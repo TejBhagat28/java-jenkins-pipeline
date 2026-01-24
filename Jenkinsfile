@@ -1,35 +1,38 @@
-
 pipeline {
-    agent any
+agent any
+environment {
+// Set JAVA_HOME to the path of your Java 17 installation
+JAVA_HOME = 'C:/Program Files/Java/jdk-21'
+// Add Java bin directory to PATH
+PATH = "${JAVA_HOME}//bin;${env.PATH}"
+}
 
-    tools {
-        maven 'M3'
-    }
-
-    stages {
-        stage('Checkout') {
-            steps {
-                checkout scm
-            }
-        }
-
-        stage('Build') {
-            steps {
-                bat 'mvn clean package'
-            }
-        }
-
-        stage('Test') {
-            steps {
-                bat 'mvn test'
-            }
-        }
-
-        stage('Archive') {
-            steps {
-                archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
-                junit testResults: '**/target/surefire-reports/TEST-*.xml', allowEmptyResults: true
-            }
-        }
-    }
+tools {
+maven 'M3'
+}
+stages {
+stage('Maven version') {
+steps {
+bat 'java -version'
+bat 'mvn --version'
+}
+}
+stage('GetCode') {
+steps {
+git branch: 'main', url: 'https://github.com/TejBhagat28/java-jenkins-pipeline.git'
+}
+}
+stage('Build') {
+steps {
+bat 'mvn clean package'
+}
+}
+stage('SonarQube analysis') {
+steps {
+withSonarQubeEnv('sonarqubetej') {
+bat 'mvn sonar:sonar'
+}
+}
+}
+}
 }
