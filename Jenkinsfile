@@ -19,10 +19,10 @@ stage('SonarQube analysis') {
 steps {
 withSonarQubeEnv('SonarQubeserver') {
 bat script: """
-sonar-scanner -D"sonar.projectKey=Siddhesh" \
+sonar-scanner -D"sonar.projectKey=tej" \
 -D"sonar.sources=." \
 -D"sonar.host.url=http://localhost:9000" \
--D"sonar.login=sqp_c84a56847a2f17688bfe80a1d533feac2acab633"
+-D"sonar.login=sqa_5c7d32c52ae8063be84e5f83ef654756958f89f0"
 """
 }
 }
